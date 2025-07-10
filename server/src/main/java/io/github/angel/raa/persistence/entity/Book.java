@@ -38,7 +38,7 @@ public class Book {
     @Temporal(TemporalType.DATE)
     private LocalDate publicationYear;
     @Column(name = "available", columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private boolean available;
+    private Boolean available;
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "fk_user_id", referencedColumnName = "user_id")
     private User owner;

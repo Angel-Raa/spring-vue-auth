@@ -34,10 +34,10 @@ public class Response<T> implements Serializable{
 
     }
 
-    public static <T> Response<T> success(T data) {
+    public static <T> Response<T> success(String message,T data) {
         return Response.<T>builder()
                 .status(HttpStatus.OK.value())
-                .message("Success")
+                .message(message)
                 .data(data)
                 .build();
     }
