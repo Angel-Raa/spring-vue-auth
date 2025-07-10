@@ -136,10 +136,12 @@ public class BookServiceImpl implements BookService {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BookDto getBySlug(String slug) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBySlug'");
+        Book book = repository.findBySlugContainingIgnoreCase(slug)
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+        return mapper.toDto(book);
     }
 
 }

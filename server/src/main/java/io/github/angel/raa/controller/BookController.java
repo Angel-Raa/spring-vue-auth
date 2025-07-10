@@ -21,6 +21,9 @@ import io.github.angel.raa.dto.request.book.BookRequest;
 import io.github.angel.raa.dto.response.Response;
 import io.github.angel.raa.dto.response.book.BookDto;
 import io.github.angel.raa.service.BookService;
+import io.github.angel.raa.utils.JwtHelper;
+import io.github.angel.raa.utils.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class BookController {
     private static final Logger log = LoggerFactory.getLogger(BookController.class);
     private final BookService bookService;
+    private final JwtHelper helper;
 
     @PreAuthorize("permitAll")
     @GetMapping
@@ -53,10 +57,29 @@ public class BookController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'GUEST', 'USER')")
-    @PostMapping("/bulk")
-    public ResponseEntity<Response<String>> saveAll(@RequestParam(name = "username") String username,
-            @Valid @RequestBody List<BookRequest> books) {
+    @PostMapping
+    public ResponseEntity<Response<BookDto>> save(@Valid @RequestBody BookRequest book, HttpServletRequest request) {
 
+        String username = helper.extractUsername(request);
+        log.info("Username: {}", username);
+        BookDto bookDto = bookService.save(book, username);
+        return ResponseEntity.ok(Response.<BookDto>success("Book saved successfully", bookDto));
+    }
+
+    @PreAuthorize("permitAll")
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<Response<BookDto>> getBySlug(
+            @PathVariable String slug) {
+        BookDto book = bookService.getBySlug(slug);
+        return ResponseEntity.ok(Response.<BookDto>success("Book retrieved successfully", book));
+
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'GUEST', 'USER')")
+    @PostMapping("/bulk")
+    public ResponseEntity<Response<String>> saveAll(HttpServletRequest request,
+            @Valid @RequestBody List<BookRequest> books) {
+        String username = helper.extractUsername(request);
         log.info("Username: {}", username);
         String message = bookService.saveAll(books, username);
         return ResponseEntity.ok(Response.<String>success("Books saved successfully", message));
