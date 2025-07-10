@@ -22,9 +22,9 @@ import io.github.angel.raa.dto.response.Response;
 import io.github.angel.raa.dto.response.book.BookDto;
 import io.github.angel.raa.service.BookService;
 import io.github.angel.raa.utils.JwtHelper;
-import io.github.angel.raa.utils.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @Validated
@@ -85,4 +85,38 @@ public class BookController {
         return ResponseEntity.ok(Response.<String>success("Books saved successfully", message));
 
     }
+
+    @PreAuthorize("permitAll")
+    @GetMapping("/available")
+    public ResponseEntity<Response<PageDto<BookDto>>> getAvailableBooks(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        PageDto<BookDto> books = bookService.getAvailableBooks(pageRequest);
+        return ResponseEntity.ok(Response.<PageDto<BookDto>>success("Books retrieved successfully", books));
+
+    }
+
+    @PreAuthorize("permitAll")
+    @GetMapping("/author")
+    public ResponseEntity<Response<PageDto<BookDto>>> getByAuthor(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "author") String author) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        PageDto<BookDto> books = bookService.getByAuthor(author, pageRequest);
+        return ResponseEntity.ok(Response.<PageDto<BookDto>>success("Books retrieved successfully", books));
+
+    }
+
+    @PreAuthorize("permitAll")
+    @GetMapping("/isbn/{isbn}")
+    public ResponseEntity<Response<BookDto>> getByIsbn(
+            @Valid @NotBlank(message = "El ISBN no puede estar vacío") @PathVariable String isbn) {
+        BookDto book = bookService.getByIsbn(isbn);
+        return ResponseEntity.ok(Response.<BookDto>success("Book retrieved successfully", book));
+
+    }
+
+    
 }

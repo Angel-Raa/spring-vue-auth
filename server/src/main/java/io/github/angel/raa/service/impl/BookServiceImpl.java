@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.github.angel.raa.dto.PageDto;
 import io.github.angel.raa.dto.request.book.BookRequest;
 import io.github.angel.raa.dto.response.book.BookDto;
+import io.github.angel.raa.dto.response.book.BookWithOwnerDto;
 import io.github.angel.raa.exception.BookNotFoundException;
 import io.github.angel.raa.mapper.BookMapper;
 import io.github.angel.raa.persistence.entity.Book;
@@ -18,7 +19,6 @@ import io.github.angel.raa.persistence.entity.User;
 import io.github.angel.raa.persistence.repository.BookRepository;
 import io.github.angel.raa.persistence.repository.UserRepository;
 import io.github.angel.raa.service.BookService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -61,7 +61,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public PageDto<BookDto> getByAuthor(String author, Pageable pageable) {
-        Page<Book> books = repository.findByAuthor(author, pageable);
+        Page<Book> books = repository.findByAuthorContainingIgnoreCase(author, pageable);
         return new PageDto<BookDto>(
                 books.getContent().stream().map(mapper::toDto).toList(),
                 books.getTotalElements(),
@@ -112,10 +112,19 @@ public class BookServiceImpl implements BookService {
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public PageDto<BookDto> getBooksByOwner(String username, Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBooksByOwner'");
+    public PageDto<BookWithOwnerDto> getBooksByOwner(String username, Pageable pageable) {
+        Page<Book> books = repository.findByOwnerUsername(username, pageable);
+
+        return new PageDto<>(
+                books.getContent().stream().map(mapper::toWithOwnerDto).toList(),
+                books.getTotalElements(),
+                books.getNumber(),
+                books.getSize()
+
+        );
+
     }
 
     @Transactional

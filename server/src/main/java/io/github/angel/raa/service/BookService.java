@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import io.github.angel.raa.dto.PageDto;
 import io.github.angel.raa.dto.request.book.BookRequest;
 import io.github.angel.raa.dto.response.book.BookDto;
+import io.github.angel.raa.dto.response.book.BookWithOwnerDto;
 
 public interface BookService {
     // 🔍 Consultas
@@ -22,7 +23,7 @@ public interface BookService {
 
     PageDto<BookDto> getAvailableBooks(Pageable pageable);
 
-    PageDto<BookDto> getBooksByOwner(String username, Pageable pageable);
+    PageDto<BookWithOwnerDto> getBooksByOwner(String username, Pageable pageable);
 
     String saveAll(List<BookRequest> books, String username);
 

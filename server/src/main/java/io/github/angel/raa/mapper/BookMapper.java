@@ -4,7 +4,10 @@ import org.springframework.stereotype.Component;
 
 import io.github.angel.raa.dto.request.book.BookRequest;
 import io.github.angel.raa.dto.response.book.BookDto;
+import io.github.angel.raa.dto.response.book.BookWithOwnerDto;
+import io.github.angel.raa.dto.response.user.UserDto;
 import io.github.angel.raa.persistence.entity.Book;
+import io.github.angel.raa.persistence.entity.User;
 import io.github.angel.raa.utils.Slugify;
 
 @Component
@@ -64,4 +67,28 @@ public class BookMapper implements Mapper<BookDto, Book> {
         bk.setSlug(Slugify.slugify(book.getTitle()));
         return bk;
     }
+
+    public BookWithOwnerDto toWithOwnerDto(Book book) {
+        return new BookWithOwnerDto(
+                book.getBookId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getIsbn(),
+                book.getSlug(),
+                book.getPublicationYear(),
+                book.getAvailable(),
+                toUserDto(book.getOwner()));
+    }
+
+    public UserDto toUserDto(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        return new UserDto(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEnabled());
+    }
+
 }
