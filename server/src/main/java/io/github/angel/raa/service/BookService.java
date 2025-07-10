@@ -32,6 +32,6 @@ public interface BookService {
 
     BookDto update(UUID bookId, BookRequest book, String username);
 
-    void deleteById(UUID bookId);
+    void deleteById(UUID bookId, String username);
 
 }

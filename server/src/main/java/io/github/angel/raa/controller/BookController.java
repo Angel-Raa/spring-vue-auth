@@ -1,6 +1,7 @@
 package io.github.angel.raa.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +9,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +23,7 @@ import io.github.angel.raa.dto.PageDto;
 import io.github.angel.raa.dto.request.book.BookRequest;
 import io.github.angel.raa.dto.response.Response;
 import io.github.angel.raa.dto.response.book.BookDto;
+import io.github.angel.raa.dto.response.book.BookWithOwnerDto;
 import io.github.angel.raa.service.BookService;
 import io.github.angel.raa.utils.JwtHelper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +49,18 @@ public class BookController {
         PageDto<BookDto> books = bookService.getAll(pageRequest);
         return ResponseEntity.ok(
                 Response.<PageDto<BookDto>>success("Books retrieved successfully", books));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'GUEST', 'USER')")
+    @GetMapping("/me")
+    public ResponseEntity<Response<PageDto<BookWithOwnerDto>>> getBooksByOwner(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size, HttpServletRequest request) {
+        String username = helper.extractUsername(request);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        PageDto<BookWithOwnerDto> books = bookService.getBooksByOwner(username, pageRequest);
+        return ResponseEntity.ok(Response.<PageDto<BookWithOwnerDto>>success("Books retrieved successfully", books));
+
     }
 
     @PreAuthorize("permitAll")
@@ -86,6 +102,27 @@ public class BookController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GUEST', 'USER')")
+    @PutMapping("/{bookId}")
+    public ResponseEntity<Response<BookDto>> update(@PathVariable("bookId") final UUID bookId,
+            @Valid @RequestBody BookRequest bookRequest, HttpServletRequest request) {
+        String username = helper.extractUsername(request);
+        BookDto bookDto = bookService.update(bookId, bookRequest, username);
+        return ResponseEntity.ok(Response.<BookDto>success("Book updated successfully", bookDto));
+
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'GUEST', 'USER')")
+    @DeleteMapping("/{bookId}")
+    public ResponseEntity<Response<String>> deleteById(
+            @PathVariable("bookId") final UUID bookId, HttpServletRequest request) {
+
+        String username = helper.extractUsername(request);
+        bookService.deleteById(bookId, username);
+        return ResponseEntity.ok(Response.<String>success("Book deleted successfully"));
+
+    }
+
     @PreAuthorize("permitAll")
     @GetMapping("/available")
     public ResponseEntity<Response<PageDto<BookDto>>> getAvailableBooks(
@@ -118,5 +155,4 @@ public class BookController {
 
     }
 
-    
 }

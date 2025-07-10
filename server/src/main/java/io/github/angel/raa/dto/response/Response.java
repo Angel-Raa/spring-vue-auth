@@ -58,4 +58,12 @@ public class Response<T> implements Serializable {
                 .message(message)
                 .build();
     }
+
+    public static <T> Response<T> success(String message) {
+        return Response.<T>builder()
+                .status(HttpStatus.OK.value())
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }

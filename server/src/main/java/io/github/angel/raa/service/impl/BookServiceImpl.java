@@ -12,6 +12,7 @@ import io.github.angel.raa.dto.PageDto;
 import io.github.angel.raa.dto.request.book.BookRequest;
 import io.github.angel.raa.dto.response.book.BookDto;
 import io.github.angel.raa.dto.response.book.BookWithOwnerDto;
+import io.github.angel.raa.exception.AccessDeniedException;
 import io.github.angel.raa.exception.BookNotFoundException;
 import io.github.angel.raa.mapper.BookMapper;
 import io.github.angel.raa.persistence.entity.Book;
@@ -19,6 +20,7 @@ import io.github.angel.raa.persistence.entity.User;
 import io.github.angel.raa.persistence.repository.BookRepository;
 import io.github.angel.raa.persistence.repository.UserRepository;
 import io.github.angel.raa.service.BookService;
+import io.github.angel.raa.utils.Slugify;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -86,10 +88,18 @@ public class BookServiceImpl implements BookService {
 
     }
 
+    @Transactional
     @Override
-    public void deleteById(UUID bookId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+    public void deleteById(UUID bookId, String username) {
+        // Buscar libro
+        Book bookEntity = repository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+
+        if (!bookEntity.getOwner().getUsername().equals(username)) {
+            throw new AccessDeniedException("Book not found");
+        }
+        repository.delete(bookEntity);
+
     }
 
     @Transactional
@@ -108,8 +118,24 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public BookDto update(UUID bookId, BookRequest book, String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        // Buscar libro
+        Book bookEntity = repository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+
+        if (!bookEntity.getOwner().getUsername().equals(username)) {
+            throw new AccessDeniedException("Book not found");
+        }
+
+        // Actualizar campos
+        bookEntity.setTitle(book.getTitle());
+        bookEntity.setAuthor(book.getAuthor());
+        bookEntity.setIsbn(book.getIsbn());
+        bookEntity.setAvailable(book.getAvailable());
+        bookEntity.setSlug(Slugify.slugify(book.getTitle()));
+        bookEntity.setPublicationYear(book.getPublicationYear());
+        repository.save(bookEntity);
+        return mapper.toDto(bookEntity);
+
     }
 
     @Transactional(readOnly = true)
