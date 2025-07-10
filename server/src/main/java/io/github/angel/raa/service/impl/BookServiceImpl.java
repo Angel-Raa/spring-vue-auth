@@ -1,13 +1,19 @@
 package io.github.angel.raa.service.impl;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import io.github.angel.raa.dto.PageDto;
 import io.github.angel.raa.dto.response.book.BookDto;
+import io.github.angel.raa.exception.BookNotFoundException;
 import io.github.angel.raa.mapper.BookMapper;
+import io.github.angel.raa.persistence.entity.Book;
+import io.github.angel.raa.persistence.entity.User;
 import io.github.angel.raa.persistence.repository.BookRepository;
 import io.github.angel.raa.persistence.repository.UserRepository;
 import io.github.angel.raa.service.BookService;
@@ -19,40 +25,64 @@ public class BookServiceImpl implements BookService {
     private final BookRepository repository;
     private final UserRepository userRepository;
     private final BookMapper mapper;
-    
 
-
+    @Transactional(readOnly = true)
     @Override
-    public Page<BookDto> getAll(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
+    public PageDto<BookDto> getAll(Pageable pageable) {
+        Page<Book> books = repository.findAll(pageable);
+        return new PageDto<BookDto>(
+                books.getContent().stream().map(mapper::toDto).toList(),
+                books.getTotalElements(),
+                books.getNumber(),
+                books.getSize()
+            
+        );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BookDto getByTitle(String title) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getByTitle'");
+        Book book = repository.findByTitle(title)
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+        return mapper.toDto(book);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BookDto getByIsbn(String isbn) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getByIsbn'");
+        return repository.findByIsbn(isbn)
+                .map(mapper::toDto)
+                .orElseThrow(() -> new BookNotFoundException("Book not found"));
+
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Page<BookDto> getByAuthor(String author, Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getByAuthor'");
+    public PageDto<BookDto> getByAuthor(String author, Pageable pageable) {
+        Page<Book> books = repository.findByAuthor(author, pageable);
+             return new PageDto<BookDto>(
+                books.getContent().stream().map(mapper::toDto).toList(),
+                books.getTotalElements(),
+                books.getNumber(),
+                books.getSize()
+            
+        );
+
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Page<BookDto> getAvailableBooks(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAvailableBooks'");
-    }
+    public PageDto<BookDto> getAvailableBooks(Pageable pageable) {
+        Page<Book> books = repository.findByAvailableTrue(pageable);
+             return new PageDto<BookDto>(
+                books.getContent().stream().map(mapper::toDto).toList(),
+                books.getTotalElements(),
+                books.getNumber(),
+                books.getSize()
+            
+        );
 
-    
+    }
 
     @Override
     public void deleteById(UUID bookId) {
@@ -60,12 +90,20 @@ public class BookServiceImpl implements BookService {
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
 
+    @Transactional
     @Override
     public BookDto save(BookDto book, String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BookNotFoundException("User not found"));
+        Book bookEntity = mapper.toEntity(book);
+        bookEntity.setOwner(user);
+        repository.save(bookEntity);
+        BookDto dto = mapper.toDto(bookEntity);
+        return dto;
+
     }
 
+    @Transactional
     @Override
     public BookDto update(UUID bookId, BookDto book, String username) {
         // TODO Auto-generated method stub
@@ -73,9 +111,27 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<BookDto> getBooksByOwner(String username, Pageable pageable) {
+    public PageDto<BookDto> getBooksByOwner(String username, Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getBooksByOwner'");
+    }
+
+    @Transactional
+    @Override
+    public String saveAll(List<BookDto> books, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BookNotFoundException("User not found"));
+
+        List<Book> bookEntities = books.stream()
+                .map(bto -> {
+                    Book bookEntity = mapper.toEntity(bto);
+                    bookEntity.setOwner(user);
+                    return bookEntity;
+                })
+                .toList();
+        repository.saveAll(bookEntities);
+        return "Books saved successfully";
+
     }
 
 }

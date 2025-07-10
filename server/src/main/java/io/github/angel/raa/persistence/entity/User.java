@@ -39,7 +39,7 @@ public class User {
     private Boolean enabled = true;
     @Column(name = "roles")
     @Enumerated(EnumType.STRING)
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "user_roles", joinColumns = @jakarta.persistence.JoinColumn(name = "user_id"))
     private Set<Role> roles = new HashSet<>(Set.of(Role.USER));
 
