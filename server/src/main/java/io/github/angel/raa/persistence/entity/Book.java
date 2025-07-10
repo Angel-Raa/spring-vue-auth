@@ -30,6 +30,8 @@ public class Book {
     private UUID bookId;
     @Column(name = "title", nullable = false, unique = true, length = 100, columnDefinition = "VARCHAR(100)")
     private String title;
+    @Column(name = "slug", unique = true, length = 100, columnDefinition = "VARCHAR(100)")
+    private String slug;
     @Column(name = "author", nullable = false, length = 100, columnDefinition = "VARCHAR(100)")
     private String author;
     @Column(name = "isbn", nullable = false, unique = true, length = 13, columnDefinition = "VARCHAR(13)")

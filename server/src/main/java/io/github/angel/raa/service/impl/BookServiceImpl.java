@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.angel.raa.dto.PageDto;
+import io.github.angel.raa.dto.request.book.BookRequest;
 import io.github.angel.raa.dto.response.book.BookDto;
 import io.github.angel.raa.exception.BookNotFoundException;
 import io.github.angel.raa.mapper.BookMapper;
@@ -17,6 +18,7 @@ import io.github.angel.raa.persistence.entity.User;
 import io.github.angel.raa.persistence.repository.BookRepository;
 import io.github.angel.raa.persistence.repository.UserRepository;
 import io.github.angel.raa.service.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -35,7 +37,7 @@ public class BookServiceImpl implements BookService {
                 books.getTotalElements(),
                 books.getNumber(),
                 books.getSize()
-            
+
         );
     }
 
@@ -60,12 +62,12 @@ public class BookServiceImpl implements BookService {
     @Override
     public PageDto<BookDto> getByAuthor(String author, Pageable pageable) {
         Page<Book> books = repository.findByAuthor(author, pageable);
-             return new PageDto<BookDto>(
+        return new PageDto<BookDto>(
                 books.getContent().stream().map(mapper::toDto).toList(),
                 books.getTotalElements(),
                 books.getNumber(),
                 books.getSize()
-            
+
         );
 
     }
@@ -74,12 +76,12 @@ public class BookServiceImpl implements BookService {
     @Override
     public PageDto<BookDto> getAvailableBooks(Pageable pageable) {
         Page<Book> books = repository.findByAvailableTrue(pageable);
-             return new PageDto<BookDto>(
+        return new PageDto<BookDto>(
                 books.getContent().stream().map(mapper::toDto).toList(),
                 books.getTotalElements(),
                 books.getNumber(),
                 books.getSize()
-            
+
         );
 
     }
@@ -92,10 +94,10 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public BookDto save(BookDto book, String username) {
+    public BookDto save(BookRequest book, String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BookNotFoundException("User not found"));
-        Book bookEntity = mapper.toEntity(book);
+        Book bookEntity = mapper.toBook(book);
         bookEntity.setOwner(user);
         repository.save(bookEntity);
         BookDto dto = mapper.toDto(bookEntity);
@@ -105,7 +107,7 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public BookDto update(UUID bookId, BookDto book, String username) {
+    public BookDto update(UUID bookId, BookRequest book, String username) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
@@ -118,13 +120,13 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public String saveAll(List<BookDto> books, String username) {
+    public String saveAll(List<BookRequest> books, String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BookNotFoundException("User not found"));
 
         List<Book> bookEntities = books.stream()
                 .map(bto -> {
-                    Book bookEntity = mapper.toEntity(bto);
+                    Book bookEntity = mapper.toBook(bto);
                     bookEntity.setOwner(user);
                     return bookEntity;
                 })
@@ -132,6 +134,12 @@ public class BookServiceImpl implements BookService {
         repository.saveAll(bookEntities);
         return "Books saved successfully";
 
+    }
+
+    @Override
+    public BookDto getBySlug(String slug) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getBySlug'");
     }
 
 }
