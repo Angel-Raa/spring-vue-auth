@@ -11,6 +11,7 @@ public record BookWithOwnerDto(
         String author,
         String isbn,
         String slug,
+        String image,
         LocalDate publicationYear,
         Boolean available,
         UserDto owner // 👈 Nuevo campo

@@ -50,3 +50,10 @@ export interface CreateBook {
 export interface UpdateBook extends Partial<CreateBook> {
   bookId: string
 }
+
+
+export interface NavigationItem {
+  to:string,
+  label:string
+  name:string
+}

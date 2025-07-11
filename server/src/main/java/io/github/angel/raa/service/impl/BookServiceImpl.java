@@ -132,6 +132,7 @@ public class BookServiceImpl implements BookService {
         bookEntity.setIsbn(book.getIsbn());
         bookEntity.setAvailable(book.getAvailable());
         bookEntity.setSlug(Slugify.slugify(book.getTitle()));
+        bookEntity.setImage(book.getImage());
         bookEntity.setPublicationYear(book.getPublicationYear());
         repository.save(bookEntity);
         return mapper.toDto(bookEntity);

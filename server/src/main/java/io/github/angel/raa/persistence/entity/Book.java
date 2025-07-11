@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -36,6 +37,8 @@ public class Book {
     private String author;
     @Column(name = "isbn", nullable = false, unique = true, length = 13, columnDefinition = "VARCHAR(13)")
     private String isbn;
+    @Column(name = "image", columnDefinition = "TEXT")
+    private String image;
     @Column(name = "publication_year", nullable = false, columnDefinition = "DATE")
     @Temporal(TemporalType.DATE)
     private LocalDate publicationYear;
@@ -44,5 +47,12 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "fk_user_id", referencedColumnName = "user_id")
     private User owner;
+
+    @PrePersist
+    public void setDefaultImage() {
+        if (this.image == null || this.image.isEmpty()) {
+            this.image = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500&auto=format";
+        }
+    }
 
 }

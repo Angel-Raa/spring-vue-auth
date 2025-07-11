@@ -33,5 +33,6 @@ public class BookRequest implements Serializable {
     private LocalDate publicationYear;
     @NotNull(message = "El estado no puede estar vacío")
     private Boolean available;
+    private String image;
 
 }

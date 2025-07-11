@@ -9,6 +9,7 @@ public record BookDto(
                 String author,
                 String isbn,
                 String slug,
+                String image,
                 LocalDate publicationYear,
                 Boolean available) {
 

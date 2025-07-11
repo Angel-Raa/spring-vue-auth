@@ -21,6 +21,7 @@ public class BookMapper implements Mapper<BookDto, Book> {
                 entity.getAuthor(),
                 entity.getIsbn(),
                 entity.getSlug(),
+                entity.getImage(),
                 entity.getPublicationYear(),
                 entity.getAvailable());
 
@@ -36,6 +37,7 @@ public class BookMapper implements Mapper<BookDto, Book> {
         book.setSlug(Slugify.slugify(dto.slug()));
         book.setPublicationYear(dto.publicationYear());
         book.setAvailable(dto.available());
+        book.setImage(dto.image());
         return book;
 
     }
@@ -49,7 +51,8 @@ public class BookMapper implements Mapper<BookDto, Book> {
                 book.getAuthor(),
                 book.getIsbn(),
                 book.getPublicationYear(),
-                book.getAvailable());
+                book.getAvailable(),
+                book.getImage());
 
     }
 
@@ -64,6 +67,7 @@ public class BookMapper implements Mapper<BookDto, Book> {
         bk.setPublicationYear(book.getPublicationYear());
         bk.setAvailable(book.getAvailable());
         bk.setTitle(book.getTitle());
+        bk.setImage(book.getImage());
         bk.setSlug(Slugify.slugify(book.getTitle()));
         return bk;
     }
@@ -75,6 +79,7 @@ public class BookMapper implements Mapper<BookDto, Book> {
                 book.getAuthor(),
                 book.getIsbn(),
                 book.getSlug(),
+                book.getImage(),
                 book.getPublicationYear(),
                 book.getAvailable(),
                 toUserDto(book.getOwner()));

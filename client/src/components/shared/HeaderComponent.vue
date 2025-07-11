@@ -1,8 +1,23 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import type { NavigationItem } from '@/types'
+
+const links: Array<NavigationItem> = [
+  {
+    to: '/home',
+    label: 'Home',
+    name: 'Home',
+  },
+  {
+    to: '/book',
+    label: 'Book',
+    name: 'Book',
+  },
+]
+</script>
 <template>
   <header class="bg-white">
     <div class="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
-      <a class="block text-teal-600" href="#">
+      <RouterLink class="block text-teal-600" to="/">
         <span class="sr-only">Home</span>
         <svg class="h-8" viewBox="0 0 28 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -10,45 +25,32 @@
             fill="currentColor"
           />
         </svg>
-      </a>
+      </RouterLink>
 
       <div class="flex flex-1 items-center justify-end md:justify-between">
         <nav aria-label="Global" class="hidden md:block">
           <ul class="flex items-center gap-6 text-sm">
             <li>
-              <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> About </a>
-            </li>
-
-            <li>
-              <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> Careers </a>
-            </li>
-
-            <li>
-              <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> History </a>
-            </li>
-
-            <li>
-              <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> Services </a>
-            </li>
-
-            <li>
-              <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> Projects </a>
-            </li>
-
-            <li>
-              <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> Blog </a>
+              <RouterLink
+                v-for="link in links"
+                :key="link.name"
+                class="text-gray-500 transition hover:text-gray-500/75 p-2"
+                :to="{ name: link.name }"
+              >
+                {{ link.label }}
+              </RouterLink>
             </li>
           </ul>
         </nav>
 
         <div class="flex items-center gap-4">
           <div class="sm:flex sm:gap-4">
-            <a
+            <RouterLink
               class="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700"
-              href="#"
+              :to="{name:'Login'}"
             >
               Login
-            </a>
+            </RouterLink>
 
             <a
               class="hidden rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 transition hover:text-teal-600/75 sm:block"
@@ -78,4 +80,15 @@
     </div>
   </header>
 </template>
-<style></style>
+<style>
+/* Cuando el link está activo (coincidencia parcial) */
+.router-link-active {
+  color: #4b5563; /* Gris oscuro similar a text-gray-600 */
+  font-weight: bold;
+}
+
+/* Cuando el link está activo exactamente (coincidencia exacta) */
+.router-link-exact-active {
+  border-bottom: 2px solid #4b5563;
+}
+</style>

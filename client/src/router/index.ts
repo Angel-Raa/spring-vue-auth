@@ -11,6 +11,17 @@ const routes: Array<RouteRecordRaw> = [
     name: 'NotFound',
     component: () => import('@/view/not-found/NotFoundView.vue'),
   },
+  {
+    path: '/book',
+    name: 'Book',
+    component: () => import('@/view/book/BookView.vue'),
+  },
+
+  {
+    path: '/auth/login',
+    name: 'Login',
+    component: () => import('@/view/auth/LoginView.vue')
+  }
 ]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
