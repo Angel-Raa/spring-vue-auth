@@ -18,10 +18,15 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   {
+    path: '/book/:slug',
+    name: 'BookDetails',
+    component: () => import('@/view/book/BookDetailsView.vue'),
+  },
+  {
     path: '/auth/login',
     name: 'Login',
-    component: () => import('@/view/auth/LoginView.vue')
-  }
+    component: () => import('@/view/auth/LoginView.vue'),
+  },
 ]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

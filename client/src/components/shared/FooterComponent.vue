@@ -1,3 +1,9 @@
+<script lang="ts" setup>
+import { computed } from 'vue'
+
+const currentYear = computed(() => new Date().getFullYear())
+</script>
+
 <template>
   <footer class="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
     <div class="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -14,7 +20,7 @@
 
         <!-- Enlaces simples -->
         <ul class="flex flex-col sm:flex-row gap-4 text-sm text-gray-600 dark:text-gray-400">
-          <li><RouterLink to="/libros" class="hover:underline">Libros</RouterLink></li>
+          <li><RouterLink :to="{ name: 'Book' }" class="hover:underline">Libros</RouterLink></li>
           <li><RouterLink to="/autores" class="hover:underline">Autores</RouterLink></li>
           <li><RouterLink to="/generos" class="hover:underline">Géneros</RouterLink></li>
           <li><RouterLink to="/contacto" class="hover:underline">Contacto</RouterLink></li>
@@ -29,9 +35,5 @@
     </div>
   </footer>
 </template>
-
-<script setup>
-import { computed } from 'vue'
-
-const currentYear = computed(() => new Date().getFullYear())
-</script>
+<style>
+</style>

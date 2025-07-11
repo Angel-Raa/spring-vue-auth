@@ -15,29 +15,34 @@ export interface Role {
   authority: string
 }
 
-export interface Book {
+// types/apiResponse.ts
+export interface ApiResponse<T> {
   message: string
-  data: Data
+  data: T
   status: number
   timestamp: Date
 }
 
-export interface Data {
-  content: Content[]
+export interface PaginatedResponse<T> {
+  content: T[]
   totalElements: number
   number: number
   size: number
 }
 
-export interface Content {
+export interface Book {
   bookId: string
   title: string
   author: string
   isbn: string
   slug: string
+  image: string
   publicationYear: Date
   available: boolean
 }
+
+// Cuando necesites usarlas:
+export type BookApiResponse = ApiResponse<PaginatedResponse<Book>>
 
 export interface CreateBook {
   title: string
@@ -45,15 +50,15 @@ export interface CreateBook {
   isbn: string
   publicationYear: Date | string
   available: boolean
+  image?: string
 }
 
 export interface UpdateBook extends Partial<CreateBook> {
   bookId: string
 }
 
-
 export interface NavigationItem {
-  to:string,
-  label:string
-  name:string
+  to: string
+  label: string
+  name: string
 }

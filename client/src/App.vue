@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
-import FooterComponent from './components/shared/FooterComponent.vue'
 import HeaderComponent from './components/shared/HeaderComponent.vue'
+import FooterComponent from './components/shared/FooterComponent.vue';
 </script>
 
 <template>
